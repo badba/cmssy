@@ -1,0 +1,23 @@
+#AddType application/x-httpd-php .htm .html
+Options +FollowSymLinks
+Options -Indexes
+IndexOptions +Charset=UTF-8
+AddDefaultCharset UTF-8
+DirectorySlash Off
+ErrorDocument 404 /errors404.php
+
+RewriteEngine on
+RewriteOptions AllowNoSlash
+
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://%{SERVER_NAME}/$1 [R,L]
+
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteCond %{REQUEST_URI} ^(/\.)(.*) [OR]
+RewriteCond %{REQUEST_URI} (.*)(\.page.(.*)|/index\.(.*)|\.template\.(.*)|/default\.(.*))$
+RewriteRule .* - [F]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^.*$ /.cms/init.php [QSA]
